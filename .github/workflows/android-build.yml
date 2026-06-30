@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android
 
 on:
   push:
@@ -24,15 +24,29 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Build Debug APK
+      - name: Build APK
+        run: ./gradlew assembleDebug
+
+      - name: Build AAB
+        run: ./gradlew bundleRelease || true
+
+      - name: Show generated files
         run: |
-          ./gradlew assembleDebug
-          echo "========== APK Files =========="
-          find . -type f -name "*.apk"
+          echo "===== APK ====="
+          find . -name "*.apk"
+          echo "===== AAB ====="
+          find . -name "*.aab"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
+          name: APK
           path: |
             **/*.apk
+
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: AAB
+          path: |
+            **/*.aab
